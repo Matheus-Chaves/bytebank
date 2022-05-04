@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
+  // utilizando o runApp com um Widget temos o benefício do hot reload
+  runApp(const BytebankApp());
+}
+
+class BytebankApp extends StatelessWidget {
+  const BytebankApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
       home: Scaffold(
-        body: const ListaTransferencias(),
-        appBar: AppBar(title: const Text("Transferências")),
-        floatingActionButton: const FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: null,
-        ),
+        body: FormularioTransferencia(),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class FormularioTransferencia extends StatelessWidget {
+  const FormularioTransferencia({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Criando Transferência")),
+      body: const Text("Oba, hot reload pegando!"),
+    );
+  }
 }
 
 class ListaTransferencias extends StatelessWidget {
@@ -20,12 +35,19 @@ class ListaTransferencias extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ItemTransferencia(Transferencia(100.56, 1000, "05/2022")),
-        ItemTransferencia(Transferencia(1009, 1000, "06/2022")),
-        ItemTransferencia(Transferencia(5423, 1000, "07/2022")),
-      ],
+    return Scaffold(
+      appBar: AppBar(title: const Text("Transferências")),
+      body: Column(
+        children: [
+          ItemTransferencia(Transferencia(100.56, 1000, "05/2022")),
+          ItemTransferencia(Transferencia(1009, 1000, "06/2022")),
+          ItemTransferencia(Transferencia(5423, 1000, "07/2022")),
+        ],
+      ),
+      floatingActionButton: const FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: null,
+      ),
     );
   }
 }
@@ -41,7 +63,10 @@ class ItemTransferencia extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.monetization_on),
+        leading: const SizedBox(
+          child: Icon(Icons.monetization_on),
+          height: double.infinity, //para centralizar o símbolo
+        ),
         title: Text(_transferencia.valorTransferencia.toString()),
         subtitle: Text(_transferencia.numeroConta.toString()),
         trailing: Text(_transferencia.dataTransferencia),
