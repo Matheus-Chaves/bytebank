@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  // utilizando o runApp com um Widget temos o benefício do hot reload
-  runApp(const BytebankApp());
-}
+void main() => runApp(const BytebankApp());
 
 class BytebankApp extends StatelessWidget {
   const BytebankApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
-        body: FormularioTransferencia(),
+        body: ListaTransferencias(),
       ),
     );
   }
@@ -60,11 +57,7 @@ class FormularioTransferencia extends StatelessWidget {
 
     if (numeroConta != null && valor != null) {
       final transferenciaCriada = Transferencia(valor, numeroConta, date);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$transferenciaCriada'),
-        ),
-      );
+      Navigator.pop(context, transferenciaCriada);
     }
   }
 }
@@ -121,9 +114,23 @@ class ListaTransferencias extends StatelessWidget {
           ItemTransferencia(Transferencia(5423, 1000, DateTime.now())),
         ],
       ),
-      floatingActionButton: const FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: null,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          final Future<Transferencia?> future = Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return FormularioTransferencia();
+            }),
+          );
+          future.then((transferenciaRecebida) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('$transferenciaRecebida'),
+              ),
+            );
+          });
+        },
       ),
     );
   }
