@@ -32,59 +32,76 @@ class FormularioTransferencia extends StatelessWidget {
       appBar: AppBar(title: const Text("Criando Transferência")),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controladorCampoNumeroConta,
-              style: const TextStyle(
-                fontSize: 24,
-              ),
-              decoration: const InputDecoration(
-                labelText: "Número da conta",
-                hintText: "0000",
-              ),
-              keyboardType: TextInputType.number,
-            ),
+          Editor(
+            controlador: _controladorCampoNumeroConta,
+            rotulo: "Número da conta",
+            dica: "0000",
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _controladorCampoValor,
-              style: const TextStyle(
-                fontSize: 24,
-              ),
-              decoration: const InputDecoration(
-                icon: Icon(Icons.monetization_on),
-                labelText: "Valor",
-                hintText: "0.00",
-              ),
-              keyboardType: TextInputType.number,
-            ),
+          Editor(
+            controlador: _controladorCampoValor,
+            rotulo: "Valor",
+            dica: "0.00",
+            icone: Icons.monetization_on,
           ),
           ElevatedButton(
-            onPressed: () {
-              debugPrint("Clicou no confirmar");
-              final int? numeroConta =
-                  int.tryParse(_controladorCampoNumeroConta.text);
-              final double? valor =
-                  double.tryParse(_controladorCampoValor.text);
-              DateTime now = DateTime.now();
-              DateTime date = DateTime(now.year, now.month, now.day);
-
-              if (numeroConta != null && valor != null) {
-                final transferenciaCriada =
-                    Transferencia(valor, numeroConta, date);
-                debugPrint("$transferenciaCriada");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$transferenciaCriada'),
-                  ),
-                );
-              }
-            },
+            onPressed: () => _criaTransferencia(context),
             child: const Text("Confirmar"),
           )
         ],
+      ),
+    );
+  }
+
+  void _criaTransferencia(BuildContext context) {
+    final int? numeroConta = int.tryParse(_controladorCampoNumeroConta.text);
+    final double? valor = double.tryParse(_controladorCampoValor.text);
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+
+    if (numeroConta != null && valor != null) {
+      final transferenciaCriada = Transferencia(valor, numeroConta, date);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$transferenciaCriada'),
+        ),
+      );
+    }
+  }
+}
+
+class Editor extends StatelessWidget {
+  final TextEditingController _controlador;
+  final String _rotulo;
+  final String? _dica;
+  final IconData? _icone;
+
+  const Editor(
+      {Key? key,
+      required TextEditingController controlador,
+      required String rotulo,
+      String? dica,
+      IconData? icone})
+      : _controlador = controlador,
+        _rotulo = rotulo,
+        _dica = dica,
+        _icone = icone,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _controlador,
+        style: const TextStyle(
+          fontSize: 24,
+        ),
+        decoration: InputDecoration(
+          icon: _icone == null ? null : Icon(_icone),
+          labelText: _rotulo,
+          hintText: _dica,
+        ),
+        keyboardType: TextInputType.number,
       ),
     );
   }
