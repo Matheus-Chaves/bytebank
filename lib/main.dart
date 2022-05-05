@@ -10,7 +10,7 @@ class BytebankApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: FormularioTransferencia(),
       ),
@@ -19,13 +19,68 @@ class BytebankApp extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
-  const FormularioTransferencia({Key? key}) : super(key: key);
+  FormularioTransferencia({Key? key}) : super(key: key);
+
+  // para monitorar as edições nos campos de texto
+  final TextEditingController _controladorCampoNumeroConta =
+      TextEditingController();
+  final TextEditingController _controladorCampoValor = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Criando Transferência")),
-      body: const Text("Oba, hot reload pegando!"),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _controladorCampoNumeroConta,
+              style: const TextStyle(
+                fontSize: 24,
+              ),
+              decoration: const InputDecoration(
+                labelText: "Número da conta",
+                hintText: "0000",
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _controladorCampoValor,
+              style: const TextStyle(
+                fontSize: 24,
+              ),
+              decoration: const InputDecoration(
+                icon: Icon(Icons.monetization_on),
+                labelText: "Valor",
+                hintText: "0.00",
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              debugPrint("Clicou no confirmar");
+              final int? numeroConta =
+                  int.tryParse(_controladorCampoNumeroConta.text);
+              final double? valor =
+                  double.tryParse(_controladorCampoValor.text);
+              DateTime now = DateTime.now();
+              DateTime date = DateTime(now.year, now.month, now.day);
+
+              if (numeroConta != null && valor != null) {
+                final transferenciaCriada =
+                    Transferencia(valor, numeroConta, date);
+                debugPrint("$transferenciaCriada");
+              }
+            },
+            child: const Text("Confirmar"),
+          )
+        ],
+      ),
     );
   }
 }
@@ -39,9 +94,9 @@ class ListaTransferencias extends StatelessWidget {
       appBar: AppBar(title: const Text("Transferências")),
       body: Column(
         children: [
-          ItemTransferencia(Transferencia(100.56, 1000, "05/2022")),
-          ItemTransferencia(Transferencia(1009, 1000, "06/2022")),
-          ItemTransferencia(Transferencia(5423, 1000, "07/2022")),
+          ItemTransferencia(Transferencia(100.56, 1000, DateTime.now())),
+          ItemTransferencia(Transferencia(1009, 1000, DateTime.now())),
+          ItemTransferencia(Transferencia(5423, 1000, DateTime.now())),
         ],
       ),
       floatingActionButton: const FloatingActionButton(
@@ -69,7 +124,7 @@ class ItemTransferencia extends StatelessWidget {
         ),
         title: Text(_transferencia.valorTransferencia.toString()),
         subtitle: Text(_transferencia.numeroConta.toString()),
-        trailing: Text(_transferencia.dataTransferencia),
+        trailing: Text(_transferencia.dataTransferencia.toString()),
       ),
     );
   }
@@ -78,11 +133,16 @@ class ItemTransferencia extends StatelessWidget {
 class Transferencia {
   final double valorTransferencia;
   final int numeroConta;
-  final String dataTransferencia;
+  final DateTime dataTransferencia;
 
   Transferencia(
     this.valorTransferencia,
     this.numeroConta,
     this.dataTransferencia,
   );
+
+  @override
+  String toString() {
+    return "Transferencia = valor: $valorTransferencia, numero: $numeroConta, data: $dataTransferencia.";
+  }
 }
