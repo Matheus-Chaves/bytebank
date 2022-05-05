@@ -75,6 +75,11 @@ class FormularioTransferencia extends StatelessWidget {
                 final transferenciaCriada =
                     Transferencia(valor, numeroConta, date);
                 debugPrint("$transferenciaCriada");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$transferenciaCriada'),
+                  ),
+                );
               }
             },
             child: const Text("Confirmar"),
@@ -124,7 +129,9 @@ class ItemTransferencia extends StatelessWidget {
         ),
         title: Text(_transferencia.valorTransferencia.toString()),
         subtitle: Text(_transferencia.numeroConta.toString()),
-        trailing: Text(_transferencia.dataTransferencia.toString()),
+        trailing: Text(_transferencia.dataTransferencia
+            .toString()
+            .replaceAll("00:00:00.000", "")),
       ),
     );
   }
@@ -143,6 +150,7 @@ class Transferencia {
 
   @override
   String toString() {
-    return "Transferencia = valor: $valorTransferencia, numero: $numeroConta, data: $dataTransferencia.";
+    var data = dataTransferencia.toString().replaceAll("00:00:00.000", "");
+    return "Transferencia = valor: $valorTransferencia, numero: $numeroConta, data: $data";
   }
 }
