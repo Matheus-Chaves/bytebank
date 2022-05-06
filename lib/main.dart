@@ -7,17 +7,20 @@ class BytebankApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: ListaTransferencias(),
-      ),
-    );
+    return MaterialApp(home: ListaTransferencias());
   }
 }
 
-class FormularioTransferencia extends StatelessWidget {
-  FormularioTransferencia({Key? key}) : super(key: key);
+class FormularioTransferencia extends StatefulWidget {
+  const FormularioTransferencia({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() {
+    return FormularioTransferenciaState();
+  }
+}
+
+class FormularioTransferenciaState extends State<FormularioTransferencia> {
   // para monitorar as edições nos campos de texto
   final TextEditingController _controladorCampoNumeroConta =
       TextEditingController();
@@ -27,24 +30,26 @@ class FormularioTransferencia extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Criando Transferência")),
-      body: Column(
-        children: [
-          Editor(
-            controlador: _controladorCampoNumeroConta,
-            rotulo: "Número da conta",
-            dica: "0000",
-          ),
-          Editor(
-            controlador: _controladorCampoValor,
-            rotulo: "Valor",
-            dica: "0.00",
-            icone: Icons.monetization_on,
-          ),
-          ElevatedButton(
-            onPressed: () => _criaTransferencia(context),
-            child: const Text("Confirmar"),
-          )
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Editor(
+              controlador: _controladorCampoNumeroConta,
+              rotulo: "Número da conta",
+              dica: "0000",
+            ),
+            Editor(
+              controlador: _controladorCampoValor,
+              rotulo: "Valor",
+              dica: "0.00",
+              icone: Icons.monetization_on,
+            ),
+            ElevatedButton(
+              onPressed: () => _criaTransferencia(context),
+              child: const Text("Confirmar"),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -100,20 +105,26 @@ class Editor extends StatelessWidget {
   }
 }
 
-class ListaTransferencias extends StatelessWidget {
+class ListaTransferencias extends StatefulWidget {
   ListaTransferencias({Key? key}) : super(key: key);
 
-  // inicialmente vazia
   final List<Transferencia?> _transferencias = [];
 
+  @override
+  State<StatefulWidget> createState() {
+    return ListaTransferenciasState();
+  }
+}
+
+class ListaTransferenciasState extends State<ListaTransferencias> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Transferências")),
       body: ListView.builder(
-        itemCount: _transferencias.length,
+        itemCount: widget._transferencias.length,
         itemBuilder: (context, indice) {
-          final transferencia = _transferencias[indice]!;
+          final transferencia = widget._transferencias[indice]!;
           return ItemTransferencia(transferencia);
         },
       ),
@@ -129,12 +140,14 @@ class ListaTransferencias extends StatelessWidget {
           // o bloco abaixo será chamado quando o future for ativado
           // receberá o valor passado onde Navigator.pop for chamado.
           future.then((transferenciaRecebida) {
-            _transferencias.add(transferenciaRecebida);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('$transferenciaRecebida'),
-              ),
-            );
+            if (transferenciaRecebida != null) {
+              setState(() {
+                widget._transferencias.add(transferenciaRecebida);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$transferenciaRecebida')),
+                );
+              });
+            }
           });
         },
       ),
