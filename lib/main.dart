@@ -7,7 +7,7 @@ class BytebankApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: ListaTransferencias(),
       ),
@@ -68,13 +68,13 @@ class Editor extends StatelessWidget {
   final String? _dica;
   final IconData? _icone;
 
-  const Editor(
-      {Key? key,
-      required TextEditingController controlador,
-      required String rotulo,
-      String? dica,
-      IconData? icone})
-      : _controlador = controlador,
+  const Editor({
+    Key? key,
+    required TextEditingController controlador,
+    required String rotulo,
+    String? dica,
+    IconData? icone,
+  })  : _controlador = controlador,
         _rotulo = rotulo,
         _dica = dica,
         _icone = icone,
@@ -101,18 +101,21 @@ class Editor extends StatelessWidget {
 }
 
 class ListaTransferencias extends StatelessWidget {
-  const ListaTransferencias({Key? key}) : super(key: key);
+  ListaTransferencias({Key? key}) : super(key: key);
+
+  // inicialmente vazia
+  final List<Transferencia?> _transferencias = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Transferências")),
-      body: Column(
-        children: [
-          ItemTransferencia(Transferencia(100.56, 1000, DateTime.now())),
-          ItemTransferencia(Transferencia(1009, 1000, DateTime.now())),
-          ItemTransferencia(Transferencia(5423, 1000, DateTime.now())),
-        ],
+      body: ListView.builder(
+        itemCount: _transferencias.length,
+        itemBuilder: (context, indice) {
+          final transferencia = _transferencias[indice]!;
+          return ItemTransferencia(transferencia);
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -123,7 +126,10 @@ class ListaTransferencias extends StatelessWidget {
               return FormularioTransferencia();
             }),
           );
+          // o bloco abaixo será chamado quando o future for ativado
+          // receberá o valor passado onde Navigator.pop for chamado.
           future.then((transferenciaRecebida) {
+            _transferencias.add(transferenciaRecebida);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('$transferenciaRecebida'),
