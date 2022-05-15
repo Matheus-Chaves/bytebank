@@ -1,4 +1,3 @@
-import 'package:bytebank/screens/formulario/lista.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const BytebankApp());
@@ -21,7 +20,11 @@ class BytebankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: ListaTransferencias(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Dashboard"),
+        ),
+      ),
     );
   }
 }
