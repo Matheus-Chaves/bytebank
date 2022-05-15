@@ -12,7 +12,8 @@ class BytebankApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.green[900],
+        //useMaterial3: true,
+        //primaryColor: Colors.green[900], //não necessário. ColorScheme faz isso
         colorScheme: ColorScheme.fromSwatch().copyWith(
           primary: Colors.green[900],
           secondary: Colors.blueAccent[700],

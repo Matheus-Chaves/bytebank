@@ -16,10 +16,10 @@ class Dashboard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Image.asset('images/bytebank_logo.png'),
             Material(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -32,7 +32,7 @@ class Dashboard extends StatelessWidget {
                   width: 150,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
+                    children: const <Widget>[
                       Icon(Icons.people, color: Colors.white, size: 32),
                       Text(
                         'Contacts',
