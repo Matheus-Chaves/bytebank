@@ -1,3 +1,4 @@
+import 'screens/contacts_list.dart';
 import 'screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
