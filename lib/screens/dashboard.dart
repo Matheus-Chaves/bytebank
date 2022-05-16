@@ -23,7 +23,7 @@ class Dashboard extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const ContactsList(),
+                    builder: (context) => ContactsList(),
                   ));
                 },
                 child: Container(
