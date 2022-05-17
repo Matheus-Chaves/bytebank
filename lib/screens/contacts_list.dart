@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../database/app_database.dart';
+import '../database/dao/contact_dao.dart';
 import '../models/contact.dart';
 import 'contact_form.dart';
 
 class ContactsList extends StatefulWidget {
-  const ContactsList({Key? key}) : super(key: key);
+  ContactsList({Key? key}) : super(key: key);
+  final ContactDao _dao = ContactDao();
 
   @override
   State<ContactsList> createState() => _ContactsListState();
@@ -20,7 +21,7 @@ class _ContactsListState extends State<ContactsList> {
       body: FutureBuilder<List<Contact>>(
         //importante definir o tipo do Widget, pois assim ele limita o que pode ser escrito no initialData
         initialData: const [], // devolve lista vazia de início (enquanto não achou nada)
-        future: findAll(),
+        future: widget._dao.findAll(),
         builder: (context, snapshot) {
           //snapshot is responsible for retrieving the data
           //connectionState indica o estado dos dados do snapshot
