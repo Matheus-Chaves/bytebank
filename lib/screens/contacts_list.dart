@@ -3,9 +3,14 @@ import '../database/app_database.dart';
 import '../models/contact.dart';
 import 'contact_form.dart';
 
-class ContactsList extends StatelessWidget {
+class ContactsList extends StatefulWidget {
   const ContactsList({Key? key}) : super(key: key);
 
+  @override
+  State<ContactsList> createState() => _ContactsListState();
+}
+
+class _ContactsListState extends State<ContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +68,7 @@ class ContactsList extends StatelessWidget {
               .push(MaterialPageRoute(
                 builder: (context) => const ContactForm(),
               ))
-              .then((newContact) => debugPrint(newContact.toString()));
+              .then((newContact) => setState(() {}));
         },
         child: const Icon(
           Icons.add,

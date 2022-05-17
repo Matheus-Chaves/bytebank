@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../database/app_database.dart';
 import '../models/contact.dart';
 
 class ContactForm extends StatefulWidget {
@@ -56,8 +56,9 @@ class _ContactFormState extends State<ContactForm> {
                     final String name = _nameController.text;
                     final int? accountNumber =
                         int.tryParse(_accountNumberController.text);
-                    final Contact newContact = Contact(0, name, accountNumber);
-                    Navigator.pop(context, newContact);
+                    final Contact newContact = Contact(0, name,
+                        accountNumber); // id não importa, pois é criado pelo banco de dados automaticamente.
+                    save(newContact).then((id) => Navigator.pop(context));
                   },
                 ),
               ),
