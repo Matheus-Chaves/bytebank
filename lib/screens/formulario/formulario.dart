@@ -1,5 +1,6 @@
-import 'package:bytebank/components/editor.dart';
-import 'package:bytebank/models/transferencia.dart';
+import '../../components/editor.dart';
+import '../../models/contact.dart';
+import '../../models/transaction.dart';
 import 'package:flutter/material.dart';
 
 const _tituloAppBar = "Criando Transferência";
@@ -61,7 +62,8 @@ class FormularioTransferenciaState extends State<FormularioTransferencia> {
     DateTime date = DateTime(now.year, now.month, now.day);
 
     if (numeroConta != null && valor != null) {
-      final transferenciaCriada = Transferencia(valor, numeroConta, date);
+      final transferenciaCriada =
+          Transaction(valor, Contact(0, "", numeroConta), date);
       Navigator.pop(context, transferenciaCriada);
     }
   }

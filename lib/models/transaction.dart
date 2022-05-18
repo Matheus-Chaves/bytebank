@@ -1,17 +1,19 @@
-class Transferencia {
+import 'contact.dart';
+
+class Transaction {
   final double valorTransferencia;
-  final int numeroConta;
+  final Contact contact;
   final DateTime dataTransferencia;
 
-  Transferencia(
+  Transaction(
     this.valorTransferencia,
-    this.numeroConta,
+    this.contact,
     this.dataTransferencia,
   );
 
   @override
   String toString() {
     var data = dataTransferencia.toString().replaceAll("00:00:00.000", "");
-    return "Transferencia = valor: $valorTransferencia, numero: $numeroConta, data: $data";
+    return "Transaction -> value: $valorTransferencia, contact: $contact, data: $data";
   }
 }

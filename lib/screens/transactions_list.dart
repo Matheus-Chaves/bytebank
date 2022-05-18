@@ -1,33 +1,33 @@
-import 'package:bytebank/models/transferencia.dart';
-import 'package:bytebank/screens/formulario/formulario.dart';
+import '../models/transaction.dart';
+import 'formulario/formulario.dart';
 import 'package:flutter/material.dart';
 
-const tituloAppBar = "Transferências";
+const appBarTitle = "Transactions";
 
-class ListaTransferencias extends StatefulWidget {
-  ListaTransferencias({Key? key}) : super(key: key);
+class TransactionsList extends StatefulWidget {
+  TransactionsList({Key? key}) : super(key: key);
 
-  final List<Transferencia?> _transferencias = [];
+  final List<Transaction?> _transaction = [];
 
   @override
   State<StatefulWidget> createState() {
-    return ListaTransferenciasState();
+    return TransactionsListState();
   }
 }
 
-class ListaTransferenciasState extends State<ListaTransferencias> {
+class TransactionsListState extends State<TransactionsList> {
   @override
   Widget build(BuildContext context) {
     // essa build será reconstruída quando setState for chamado
     return Scaffold(
       appBar: AppBar(
-        title: const Text(tituloAppBar),
+        title: const Text(appBarTitle),
       ),
       body: ListView.builder(
-        itemCount: widget._transferencias.length,
+        itemCount: widget._transaction.length,
         itemBuilder: (context, indice) {
-          final transferencia = widget._transferencias[indice]!;
-          return ItemTransferencia(transferencia);
+          final transaction = widget._transaction[indice]!;
+          return ItemTransferencia(transaction);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -39,25 +39,24 @@ class ListaTransferenciasState extends State<ListaTransferencias> {
               return const FormularioTransferencia();
             }),
           ).then(
-            (transferenciaRecebida) =>
-                _atualizarWidget(transferenciaRecebida, context),
+            (receivedTransaction) =>
+                _updateWidget(receivedTransaction, context),
           );
         },
       ),
     );
   }
 
-  void _atualizarWidget(
-      Transferencia? transferenciaRecebida, BuildContext context) {
+  void _updateWidget(Transaction? receivedTransaction, BuildContext context) {
     // o bloco abaixo será chamado quando o future for ativado
     // receberá o valor passado onde Navigator.pop for chamado.
-    if (transferenciaRecebida != null) {
+    if (receivedTransaction != null) {
       setState(() {
         // avisa que a build do Widget atual deverá ser atualizada após os comandos abaixo
-        widget._transferencias.add(transferenciaRecebida);
+        widget._transaction.add(receivedTransaction);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$transferenciaRecebida'),
+            content: Text('$receivedTransaction'),
           ),
         );
       });
@@ -66,10 +65,10 @@ class ListaTransferenciasState extends State<ListaTransferencias> {
 }
 
 class ItemTransferencia extends StatelessWidget {
-  final Transferencia _transferencia;
+  final Transaction _transaction;
 
   const ItemTransferencia(
-    this._transferencia,
+    this._transaction,
   ) : super(key: null);
 
   @override
@@ -77,12 +76,12 @@ class ItemTransferencia extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: const SizedBox(
-          child: Icon(Icons.monetization_on),
-          height: double.infinity, //para centralizar o símbolo
+          height: double.infinity,
+          child: Icon(Icons.monetization_on), //para centralizar o símbolo
         ),
-        title: Text(_transferencia.valorTransferencia.toString()),
-        subtitle: Text(_transferencia.numeroConta.toString()),
-        trailing: Text(_transferencia.dataTransferencia
+        title: Text(_transaction.valorTransferencia.toString()),
+        subtitle: Text(_transaction.contact.accountNumber.toString()),
+        trailing: Text(_transaction.dataTransferencia
             .toString()
             .replaceAll("00:00:00.000", "")),
       ),
