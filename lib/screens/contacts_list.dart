@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/progress.dart';
 import '../database/dao/contact_dao.dart';
 import '../models/contact.dart';
 import 'contact_form.dart';
@@ -33,16 +34,7 @@ class _ContactsListState extends State<ContactsList> {
             case ConnectionState.waiting:
               // estado que é chamado enquanto o future começou a processar, mas ainda não gerou retorno algum
               // utilizado geralmente com tela de loading
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const <Widget>[
-                    CircularProgressIndicator(),
-                    Text('Loading')
-                  ],
-                ),
-              );
+              return const Progress();
             case ConnectionState.active:
               // indica como está o estado da conexão ativa
               // utilizado geralmente com downloads, mostrando a porcentagem conforme vai baixando

@@ -1,21 +1,14 @@
+import '../components/centered_message.dart';
+import '../components/progress.dart';
+import '../http/webclient.dart';
 import '../models/transaction.dart';
-import 'formulario/formulario.dart';
 import 'package:flutter/material.dart';
 
 const appBarTitle = "Transactions";
 
-class TransactionsList extends StatefulWidget {
-  TransactionsList({Key? key}) : super(key: key);
+class TransactionsList extends StatelessWidget {
+  const TransactionsList({Key? key}) : super(key: key);
 
-  final List<Transaction?> _transaction = [];
-
-  @override
-  State<StatefulWidget> createState() {
-    return TransactionsListState();
-  }
-}
-
-class TransactionsListState extends State<TransactionsList> {
   @override
   Widget build(BuildContext context) {
     // essa build será reconstruída quando setState for chamado
@@ -23,44 +16,40 @@ class TransactionsListState extends State<TransactionsList> {
       appBar: AppBar(
         title: const Text(appBarTitle),
       ),
-      body: ListView.builder(
-        itemCount: widget._transaction.length,
-        itemBuilder: (context, indice) {
-          final transaction = widget._transaction[indice]!;
-          return ItemTransferencia(transaction);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return const FormularioTransferencia();
-            }),
-          ).then(
-            (receivedTransaction) =>
-                _updateWidget(receivedTransaction, context),
-          );
+      body: FutureBuilder<List<Transaction>>(
+        future: findAll(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              break;
+            case ConnectionState.waiting:
+              return const Progress();
+            //break;
+            case ConnectionState.active:
+              break;
+            case ConnectionState.done:
+              if (snapshot.hasData) {
+                final List<Transaction> transactions =
+                    snapshot.data as List<Transaction>;
+                if (transactions.isNotEmpty) {
+                  return ListView.builder(
+                    itemBuilder: (context, index) {
+                      final Transaction transaction = transactions[index];
+                      return ItemTransferencia(transaction);
+                    },
+                    itemCount: transactions.length,
+                  );
+                }
+              }
+              return const CenteredMessage(
+                "No transactions found",
+                icon: Icons.warning,
+              );
+          }
+          return const CenteredMessage('Unknown error');
         },
       ),
     );
-  }
-
-  void _updateWidget(Transaction? receivedTransaction, BuildContext context) {
-    // o bloco abaixo será chamado quando o future for ativado
-    // receberá o valor passado onde Navigator.pop for chamado.
-    if (receivedTransaction != null) {
-      setState(() {
-        // avisa que a build do Widget atual deverá ser atualizada após os comandos abaixo
-        widget._transaction.add(receivedTransaction);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$receivedTransaction'),
-          ),
-        );
-      });
-    }
   }
 }
 
@@ -79,11 +68,11 @@ class ItemTransferencia extends StatelessWidget {
           height: double.infinity,
           child: Icon(Icons.monetization_on), //para centralizar o símbolo
         ),
-        title: Text(_transaction.valorTransferencia.toString()),
+        title: Text(_transaction.value.toString()),
         subtitle: Text(_transaction.contact.accountNumber.toString()),
-        trailing: Text(_transaction.dataTransferencia
-            .toString()
-            .replaceAll("00:00:00.000", "")),
+        // trailing: Text(_transaction.dataTransferencia
+        //     .toString()
+        //     .replaceAll("00:00:00.000", "")),
       ),
     );
   }

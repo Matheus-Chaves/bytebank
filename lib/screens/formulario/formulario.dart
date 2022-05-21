@@ -63,7 +63,7 @@ class FormularioTransferenciaState extends State<FormularioTransferencia> {
 
     if (numeroConta != null && valor != null) {
       final transferenciaCriada =
-          Transaction(valor, Contact(0, "", numeroConta), date);
+          Transaction(valor, Contact(0, "", numeroConta));
       Navigator.pop(context, transferenciaCriada);
     }
   }
