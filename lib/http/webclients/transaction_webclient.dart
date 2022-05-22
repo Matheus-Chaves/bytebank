@@ -14,7 +14,7 @@ class TransactionWebClient {
     return decodedJson.map((json) => Transaction.fromJson(json)).toList();
   }
 
-  Future<Transaction> save(Transaction transaction) async {
+  Future<Transaction> save(Transaction transaction, String password) async {
     final String transactionJson = jsonEncode(transaction.toJson());
 
     // Realizando post e passando o json no body
@@ -23,7 +23,7 @@ class TransactionWebClient {
         await client.post(Uri.http(authority, 'transactions'),
             headers: {
               'Content-type': 'application/json',
-              'password': '1000',
+              'password': password,
             },
             body: transactionJson);
     // Decodificando o json em um Map
