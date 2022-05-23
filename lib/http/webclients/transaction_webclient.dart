@@ -16,7 +16,7 @@ class TransactionWebClient {
   Future<Transaction> save(Transaction transaction, String password) async {
     final String transactionJson = jsonEncode(transaction.toJson());
 
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 3));
     // Realizando post e passando o json no body
     // Response irá devolver um json da nova transaction criada
     final Response response =

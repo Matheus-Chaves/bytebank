@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:uuid/uuid.dart';
 
+import '../components/progress.dart';
 import '../components/response_dialog.dart';
 import '../components/transaction_auth_dialog.dart';
 import '../http/webclients/transaction_webclient.dart';
@@ -22,6 +23,7 @@ class TransactionFormState extends State<TransactionForm> {
   final TransactionWebClient _webClient = TransactionWebClient();
   // cada form deve possuir uma UUID específica
   final String transactionId = const Uuid().v4();
+  bool _isTransactionSent = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,15 @@ class TransactionFormState extends State<TransactionForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Visibility(
+                visible: _isTransactionSent,
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Progress(
+                    message: "Sending transaction...",
+                  ),
+                ),
+              ),
               Text(
                 widget.contact.name,
                 style: const TextStyle(
@@ -111,7 +122,13 @@ class TransactionFormState extends State<TransactionForm> {
   Future<void> _send(Transaction transactionCreated, String password,
       BuildContext context) async {
     try {
+      setState(() {
+        _isTransactionSent = true;
+      });
       await _webClient.save(transactionCreated, password);
+      setState(() {
+        _isTransactionSent = false;
+      });
       await showDialog(
         context: context,
         builder: (contextDialog) {
@@ -127,6 +144,10 @@ class TransactionFormState extends State<TransactionForm> {
       } else {
         _showFailureMessage(context);
       }
+    } finally {
+      setState(() {
+        _isTransactionSent = false;
+      });
     }
   }
 
