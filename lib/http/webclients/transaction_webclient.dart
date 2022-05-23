@@ -26,7 +26,20 @@ class TransactionWebClient {
               'password': password,
             },
             body: transactionJson);
-    // Decodificando o json em um Map
-    return Transaction.fromJson(jsonDecode(response.body));
+    if (response.statusCode == 200) {
+      // Decodificando o json em um Map
+      return Transaction.fromJson(jsonDecode(response.body));
+    }
+
+    throw _throwHttpError(response);
   }
+
+  Exception _throwHttpError(Response response) {
+    return Exception(_statusCodeResponses[response.statusCode]);
+  }
+
+  static final Map<int, String> _statusCodeResponses = {
+    400: 'there was an error submitting transaction',
+    401: 'authentication failed'
+  };
 }

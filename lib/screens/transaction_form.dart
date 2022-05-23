@@ -1,3 +1,4 @@
+import '../components/response_dialog.dart';
 import '../components/transaction_auth_dialog.dart';
 import '../http/webclients/transaction_webclient.dart';
 import '../models/contact.dart';
@@ -61,18 +62,20 @@ class TransactionFormState extends State<TransactionForm> {
                   child: ElevatedButton(
                     child: const Text('Transfer'),
                     onPressed: () {
-                      final double value =
-                          double.tryParse(_valueController.text)!;
-                      final transactionCreated =
-                          Transaction(value, widget.contact);
-                      showDialog(
-                        context: context,
-                        builder: (contextDialog) {
-                          return TransactionAuthDialog(onConfirm: (password) {
-                            _save(transactionCreated, password, context);
-                          });
-                        },
-                      );
+                      final double? value =
+                          double.tryParse(_valueController.text);
+                      if (value != null) {
+                        final transactionCreated =
+                            Transaction(value, widget.contact);
+                        showDialog(
+                          context: context,
+                          builder: (contextDialog) {
+                            return TransactionAuthDialog(onConfirm: (password) {
+                              _save(transactionCreated, password, context);
+                            });
+                          },
+                        );
+                      }
                     },
                   ),
                 ),
@@ -84,10 +87,26 @@ class TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _save(Transaction transactionCreated, String password,
-      BuildContext context) async {
-    _webClient.save(transactionCreated, password).then((transaction) {
-      Navigator.pop(context);
-    });
+  void _save(
+    Transaction transactionCreated,
+    String password,
+    BuildContext context,
+  ) async {
+    await _webClient.save(transactionCreated, password).catchError((e) async {
+      showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return FailureDialog(e.message);
+        },
+      );
+    }, test: (e) => e is Exception);
+    await showDialog(
+      context: context,
+      builder: (contextDialog) {
+        return const SuccessDialog('Successful transaction');
+      },
+    );
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 }
