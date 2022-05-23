@@ -7,9 +7,8 @@ import '../webclient.dart';
 
 class TransactionWebClient {
   Future<List<Transaction>> findAll() async {
-    final Response response = await client
-        .get(Uri.http(authority, 'transactions'))
-        .timeout(const Duration(seconds: 10));
+    final Response response =
+        await client.get(Uri.http(authority, 'transactions'));
     final List<dynamic> decodedJson = jsonDecode(response.body);
     return decodedJson.map((json) => Transaction.fromJson(json)).toList();
   }
@@ -31,15 +30,17 @@ class TransactionWebClient {
       return Transaction.fromJson(jsonDecode(response.body));
     }
 
-    throw _throwHttpError(response);
-  }
-
-  Exception _throwHttpError(Response response) {
-    return Exception(_statusCodeResponses[response.statusCode]);
+    throw HttpException(_statusCodeResponses[response.statusCode]!);
   }
 
   static final Map<int, String> _statusCodeResponses = {
     400: 'there was an error submitting transaction',
     401: 'authentication failed'
   };
+}
+
+class HttpException implements Exception {
+  final String message;
+
+  HttpException(this.message);
 }

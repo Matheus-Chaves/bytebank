@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../components/response_dialog.dart';
 import '../components/transaction_auth_dialog.dart';
 import '../http/webclients/transaction_webclient.dart';
@@ -92,15 +94,12 @@ class TransactionFormState extends State<TransactionForm> {
     String password,
     BuildContext context,
   ) async {
-    await _webClient.save(transactionCreated, password).catchError((e) async {
-      showDialog(
-        context: context,
-        builder: (contextDialog) {
-          return FailureDialog(e.message);
-        },
-      );
-    }, test: (e) => e is Exception);
-    await showDialog(
+    await _send(
+      transactionCreated,
+      password,
+      context,
+    );
+    showDialog(
       context: context,
       builder: (contextDialog) {
         return const SuccessDialog('Successful transaction');
@@ -108,5 +107,27 @@ class TransactionFormState extends State<TransactionForm> {
     );
     if (!mounted) return;
     Navigator.pop(context);
+  }
+
+  Future<void> _send(Transaction transactionCreated, String password,
+      BuildContext context) async {
+    await _webClient.save(transactionCreated, password).catchError((e) async {
+      _showFailureMessage(context, message: e.message);
+    }, test: (e) => e is HttpException).catchError((e) {
+      _showFailureMessage(context,
+          message: "Timeout submitting the transaction");
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      _showFailureMessage(context);
+    });
+  }
+
+  void _showFailureMessage(BuildContext context,
+      {String message = 'Unknown Error'}) {
+    showDialog(
+      context: context,
+      builder: (contextDialog) {
+        return FailureDialog(message);
+      },
+    );
   }
 }
