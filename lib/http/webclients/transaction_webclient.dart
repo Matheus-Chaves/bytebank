@@ -16,6 +16,7 @@ class TransactionWebClient {
   Future<Transaction> save(Transaction transaction, String password) async {
     final String transactionJson = jsonEncode(transaction.toJson());
 
+    await Future.delayed(const Duration(seconds: 10));
     // Realizando post e passando o json no body
     // Response irá devolver um json da nova transaction criada
     final Response response =
@@ -30,12 +31,20 @@ class TransactionWebClient {
       return Transaction.fromJson(jsonDecode(response.body));
     }
 
-    throw HttpException(_statusCodeResponses[response.statusCode]!);
+    throw HttpException(_getMessage(response.statusCode));
+  }
+
+  String _getMessage(int statusCode) {
+    if (_statusCodeResponses.containsKey(statusCode)) {
+      return _statusCodeResponses[statusCode]!;
+    }
+    return 'Unknown error';
   }
 
   static final Map<int, String> _statusCodeResponses = {
-    400: 'there was an error submitting transaction',
-    401: 'authentication failed'
+    400: 'There was an error submitting transaction',
+    401: 'Authentication failed',
+    409: 'Transaction already exists' // UUIDs iguais
   };
 }
 

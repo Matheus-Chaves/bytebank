@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:uuid/uuid.dart';
+
 import '../components/response_dialog.dart';
 import '../components/transaction_auth_dialog.dart';
 import '../http/webclients/transaction_webclient.dart';
@@ -18,6 +20,8 @@ class TransactionForm extends StatefulWidget {
 class TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
+  // cada form deve possuir uma UUID específica
+  final String transactionId = const Uuid().v4();
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +71,11 @@ class TransactionFormState extends State<TransactionForm> {
                       final double? value =
                           double.tryParse(_valueController.text);
                       if (value != null) {
-                        final transactionCreated =
-                            Transaction(value, widget.contact);
+                        final transactionCreated = Transaction(
+                          transactionId,
+                          value,
+                          widget.contact,
+                        );
                         showDialog(
                           context: context,
                           builder: (contextDialog) {
@@ -99,26 +106,28 @@ class TransactionFormState extends State<TransactionForm> {
       password,
       context,
     );
-    showDialog(
-      context: context,
-      builder: (contextDialog) {
-        return const SuccessDialog('Successful transaction');
-      },
-    );
-    if (!mounted) return;
-    Navigator.pop(context);
   }
 
   Future<void> _send(Transaction transactionCreated, String password,
       BuildContext context) async {
-    await _webClient.save(transactionCreated, password).catchError((e) async {
-      _showFailureMessage(context, message: e.message);
-    }, test: (e) => e is HttpException).catchError((e) {
-      _showFailureMessage(context,
-          message: "Timeout submitting the transaction");
-    }, test: (e) => e is TimeoutException).catchError((e) {
-      _showFailureMessage(context);
-    });
+    try {
+      await _webClient.save(transactionCreated, password);
+      await showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return const SuccessDialog('Successful transaction');
+        },
+      ).then((value) => Navigator.pop(context));
+    } catch (error) {
+      if (error is HttpException) {
+        _showFailureMessage(context, message: error.message);
+      } else if (error is TimeoutException) {
+        _showFailureMessage(context,
+            message: "Timeout submitting the transaction");
+      } else {
+        _showFailureMessage(context);
+      }
+    }
   }
 
   void _showFailureMessage(BuildContext context,
