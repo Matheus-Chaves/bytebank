@@ -1,7 +1,19 @@
-import 'screens/dashboard.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  // Tells the app that will have a async call
+  // this avoid bugs caused by waiting for the app to start
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initializes the Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Pass all uncaught errors from the framework to Crashlytics.
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
   runApp(const BytebankApp());
 }
 
@@ -25,7 +37,11 @@ class BytebankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const Dashboard(),
+      home: TextButton(
+        onPressed: () => throw Exception(),
+        child: const Text("Throw Test Exception"),
+      ),
+      //const Dashboard(),
     );
   }
 }
